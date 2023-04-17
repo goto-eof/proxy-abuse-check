@@ -4,7 +4,11 @@
 
 
 # Run it 
+```
+proxy-abuse-check -w andre-i.eu -p 80
+```
 
+# Run it with cargo
 ```
 cargo run -- -w andre-i.eu -p 80 
 ```
