@@ -17,11 +17,11 @@ fn main() {
     stream.read_to_string(&mut buffer).unwrap();
     println!("{}", buffer);
     println!(
-        "\r\nyour server is: {}",
+        "\r\nyour server is: {}\n\n",
         if buffer.contains("<title>403 Forbidden</title>") {
-            "secure"
+            "SECURE"
         } else {
-            "usecure"
+            "UNSECURE"
         }
     );
 }
