@@ -1,10 +1,23 @@
+use clap::{arg, command, Parser};
 use std::{
     io::{Read, Write},
-    net::TcpStream,
+    net::{TcpStream, ToSocketAddrs},
+    time::Duration,
 };
 
 fn main() {
-    let mut stream = TcpStream::connect("andre-i.eu:80").unwrap();
+    println!("write -help for help");
+    let args = Args::parse();
+    let mut stream = TcpStream::connect_timeout(
+        &format!("{}:{}", args.website, args.port)
+            .to_socket_addrs()
+            .unwrap()
+            .into_iter()
+            .next()
+            .unwrap(),
+        Duration::from_millis(10000),
+    )
+    .unwrap();
     stream
         .write("GET http://azenv.net/ HTTP/1.1\r\n".as_bytes())
         .unwrap();
@@ -15,7 +28,6 @@ fn main() {
     stream.write("\r\n".as_bytes()).unwrap();
     let mut buffer = String::new();
     stream.read_to_string(&mut buffer).unwrap();
-    println!("{}", buffer);
     println!(
         "\r\nyour server is: {}\n\n",
         if buffer.contains("<title>403 Forbidden</title>") {
@@ -24,4 +36,16 @@ fn main() {
             "UNSECURE"
         }
     );
+}
+
+/// Proxy abuse check applciation
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// website
+    #[arg(short, long)]
+    website: String,
+    /// ports number
+    #[arg(short, long)]
+    port: u16,
 }
